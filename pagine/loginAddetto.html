@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Addetto</title>
+  <style>
+    body { font-family: Arial; padding: 40px; background-color: #f0f0f0; }
+    .login-box {
+      background-color: #fff;
+      max-width: 400px;
+      margin: auto;
+      border: 1px solid #ccc;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .errore {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+  <script src="js/gestoreChiamate.js"></script>
+  <script src="js/personale.js"></script>
+  <script>
+    async function logga() {
+      let messaggio = document.getElementById("messaggio");
+  
+      let risultato = await loginAddetto();
+  
+      if (risultato !== "ok") {
+        messaggio.textContent = "Credenziali errate o errore nel login.";
+        return;
+      }
+  
+      let personaleJSON = sessionStorage.getItem("personale");
+      if (!personaleJSON) {
+        messaggio.textContent = "Errore: dati dell'addetto non trovati.";
+        return;
+      }
+  
+      let personale = JSON.parse(personaleJSON);
+  
+      switch (personale.ruolo) {
+        case "Admin":
+          window.location.href = "admin.html";
+          break;
+        case "Magazziniere":
+          window.location.href = "magazziniere.html";
+          break;
+        case "Erogatore":
+          window.location.href = "erogatore.html";
+          break;
+        default:
+          messaggio.textContent = "Ruolo non riconosciuto: " + personale.ruolo;
+      }
+    }
+  </script>  
+</head>
+<body>
+  <div class="login-box">
+    <h2>Login Addetto</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="logga()">Login</button>
+    <div id="messaggio" class="errore"></div>
+  </div>
+</body>
+</html>
