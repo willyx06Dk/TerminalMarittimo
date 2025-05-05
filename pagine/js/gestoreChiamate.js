@@ -88,3 +88,20 @@ function registraFornitore(nome, email, user, pass) {
             return "errore";
         });
 }
+
+function addAddetto(user, pass, ruolo, usernameA, passwordA, ruoloA) {
+    let url="/personale/addPersonale?username"=usernameA+"&password="+passwordA+"&ruolo="+ruoloA+"&nome="+user+"&passwordAddetto="+pass+"&ruoloAddetto="+ruolo;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data != "ok") {
+                console.log(data);
+                return data;
+            }
+            return "ok";
+        })
+        .catch(error => {
+            console.log("Errore nella fetch:", error);
+            return "errore";
+        });
+}
