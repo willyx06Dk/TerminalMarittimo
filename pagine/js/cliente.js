@@ -24,5 +24,12 @@ class cliente {
     toString() {
       return "ID: "+this.id+", Username: "+this.username;
     }
+
+    Parse(str){
+      let vett=str.split(",");
+      this.id=vett[0];
+      this.username=vett[1];
+      this.password=vett[2];
+    }
   }
   

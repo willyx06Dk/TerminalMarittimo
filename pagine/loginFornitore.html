@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Login Addetto</title>
+  <title>Login fornitore</title>
   <style>
     body { font-family: Arial; padding: 40px; background-color: #f0f0f0; }
     .login-box {
@@ -41,42 +41,32 @@
       let messaggio = document.getElementById("messaggio");
       let user=document.getElementById("username").textContent;
       let password=document.getElementById("password").textContent;
-      let risultato = loginPersonale(user, password);
+      let risultato = loginFornitore(user, password);
   
       if (risultato !== "ok") {
         messaggio.textContent = "Credenziali errate o errore nel login.";
         return;
       }
   
-      let personaleJSON = sessionStorage.getItem("personale");
-      if (!personaleJSON) {
-        messaggio.textContent = "Errore: dati dell'addetto non trovati.";
+      let fornitore = sessionStorage.getItem("personale");
+      if (!fornitore) {
+        messaggio.textContent = "Errore: dati del fornitore non trovati.";
         return;
       }
-  
-      let personale = JSON.parse(personaleJSON);
-  
-      switch (personale.ruolo) {
-        case "Admin":
-          window.location.href = "admin.html";
-          break;
-        case "Magazziniere":
-          window.location.href = "magazziniere.html";
-          break;
-        case "Erogatore":
-          window.location.href = "erogatore.html";
-          break;
-        default:
-          messaggio.textContent = "Ruolo non riconosciuto: " + personale.ruolo;
-      }
+    
+      window.location.href = "cliente.html";
+    }
+    function registra(){
+        window.location.href = "registraCliente.html";
     }
   </script>  
 </head>
-  <body>
-      <h2>Login Addetto</h2>
-      <input type="text" id="username" placeholder="Username" />
-      <input type="password" id="password" placeholder="Password" />
-      <button onclick="logga()">Login</button>
-      <div id="messaggio" class="errore"></div>
-  </body>
+<body>
+    <h2>Login Fornitore</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="logga()">Login</button>
+    <div id="messaggio" class="errore"></div>
+    <button onclick="registra()">registrati</button>
+</body>
 </html>
