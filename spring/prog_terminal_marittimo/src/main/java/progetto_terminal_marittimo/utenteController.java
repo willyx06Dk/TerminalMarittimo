@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping("/cliente")
-public class clienteController {
+public class utenteController {
 
     @Autowired
     private utenteDao clienteDao;
