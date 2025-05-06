@@ -1,5 +1,5 @@
 function loginPersonale(user, pass) {
-    let url="/personale/login?username="+user+"&password="+pass;
+    let url="http://localhost:8080/personale/login?username="+user+"&password="+pass;
     fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -18,7 +18,7 @@ function loginPersonale(user, pass) {
 }
 
 function loginCliente(user, pass) {
-    let url="/cliente/login?username="+user+"&password="+pass;
+    let url="http://localhost:8080/cliente/login?username="+user+"&password="+pass;
     fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -37,7 +37,7 @@ function loginCliente(user, pass) {
 }
 
 function loginFornitore(user, pass) {
-    let url="/fornitore/login?username="+user+"&password="+pass;
+    let url="http://localhost:8080/fornitore/login?username="+user+"&password="+pass;
     fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -56,7 +56,7 @@ function loginFornitore(user, pass) {
 }
 
 function registraCliente(nome, cognome, email, codice, user, pass) {
-    let url="/cliente/registra?nome"=nome+"&cognome="+cognome+"&username="+user+"&password="+pass+"&email="+email+"&codice_identificativo_carta="+codice;
+    let url="http://localhost:8080/cliente/registra?nome"=nome+"&cognome="+cognome+"&username="+user+"&password="+pass+"&email="+email+"&codice_identificativo_carta="+codice;
     fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -73,7 +73,7 @@ function registraCliente(nome, cognome, email, codice, user, pass) {
 }
 
 function registraFornitore(nome, email, user, pass) {
-    let url="/fornitore/registra?nome"=nome+"&username="+user+"&password="+pass+"&email="+email;
+    let url="http://localhost:8080/fornitore/registra?nome"=nome+"&username="+user+"&password="+pass+"&email="+email;
     fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -90,7 +90,7 @@ function registraFornitore(nome, email, user, pass) {
 }
 
 function addAddetto(user, pass, ruolo, usernameA, passwordA, ruoloA) {
-    let url="/personale/addPersonale?username"=usernameA+"&password="+passwordA+"&ruolo="+ruoloA+"&nome="+user+"&passwordAddetto="+pass+"&ruoloAddetto="+ruolo;
+    let url="http://localhost:8080/personale/addPersonale?username"=usernameA+"&password="+passwordA+"&ruolo="+ruoloA+"&nome="+user+"&passwordAddetto="+pass+"&ruoloAddetto="+ruolo;
     fetch(url)
         .then(response => response.json())
         .then(data => {
