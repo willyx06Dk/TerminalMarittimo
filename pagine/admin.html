@@ -36,28 +36,50 @@
   </style>
   <script src="js/gestoreChiamate.js"></script>
   <script src="js/personale.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
-    async function registra() {
+    async function inserisci() {
         let messaggio = document.getElementById("messaggio");
-        let user=document.getElementById("username").textContent;
-        let password=document.getElementById("password").textContent;
+        let user=document.getElementById("username").value;
+        let password=document.getElementById("password").value;
         let ruolo=document.getElementById("ruolo").value;
 
-        let credenziali=new personale();
-        credenziali.Parse(sessionStorage["personale"]);
+        let val=JSON.parse(sessionStorage["personale"]);
+        let credenziali=new PersonaleTerminal(val.id, val.username, val.password,val.ruolo);
 
-        let risultato = addAddetto(user, password, ruolo, credenziali.getUsername(), credenziali.getPassword(), credenziali.getRuolo());
+        let risultato = await addAddetto(user, password, ruolo, credenziali.getUsername(), credenziali.getPassword(), credenziali.getRuolo());
 
         if (risultato !== "ok") {
-            messaggio.textContent = "Credenziali errate o errore nel login.";
+            messaggio.textContent = "utente già esistente o errore nell'inserimento delle credenziali.";
             return;
         }
 
-        window.location.href = "admin.html";
+        alert("utente inserito con successo");
+        setTimeout(() => {window.location.href = "admin.html";}, 1000);
         }
+
+      function controlla(){
+        let personaleJSON = sessionStorage.getItem("personale");
+        if (!personaleJSON) {
+          window.location.href = "loginAddetto.html";
+          return;
+        }
+        let pers=JSON.parse(personaleJSON);
+        let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
+        if(p.getRuolo()!="Admin"){
+          window.location.href = "loginAddetto.html";
+          return;
+        }
+      }
+
+      function esci(){
+        sessionStorage.clear();
+        window.location.href = "loginAddetto.html";
+        return;
+      }
     </script>  
 </head>
-<body>
+<body onload="controlla()">
     <h2>inserisci addetto</h2>
     <input type="text" id="username" placeholder="Username" />
     <input type="password" id="password" placeholder="Password" />
@@ -67,5 +89,6 @@
     </select>
     <button onclick="inserisci()">inserisci</button>
     <div id="messaggio" class="errore"></div>
+    <button onclick="esci()">esci</button>
 </body>
 </html>

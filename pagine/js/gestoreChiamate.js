@@ -6,7 +6,6 @@ async function loginPersonale(user, pass) {
         let data = await response.json();
 
         if (data.id === -1 || !data.id) {
-            console.log("Errore");
             return "errore";
         }
 
@@ -65,8 +64,8 @@ async function registraCliente(nome, cognome, email, codice, user, pass) {
     let url = "http://localhost:8080/cliente/registra?nome="+nome+"&cognome="+cognome+"&username="+user+ "&password="+hashedPass+"&email="+email+"&codice_identificativo_carta="+codice;
     try {
         let response = await fetch(url);
-        let data = await response.json();
-        if(data == "ok"){
+        let testo = await response.text();
+        if(testo == "ok"){
             return  "ok";
         }
         return  "errore";
@@ -82,8 +81,8 @@ async function registraFornitore(nome, email, user, pass) {
     let url = "http://localhost:8080/fornitore/registra?nome="+nome+"&username="+user+"&password="+hashedPass+"&email="+email;
     try {
         let response = await fetch(url);
-        let data = await response.json();
-        if(data == "ok"){
+        let testo = await response.text();
+        if(testo == "ok"){
             return  "ok";
         }
         return  "errore";
@@ -96,12 +95,11 @@ async function registraFornitore(nome, email, user, pass) {
 
 async function addAddetto(user, pass, ruolo, usernameA, passwordA, ruoloA) {
     let hashedPass = CryptoJS.MD5(pass).toString();
-    let hashedPassA = CryptoJS.MD5(passwordA).toString();
-    let url = "http://localhost:8080/personale/addPersonale?username="+usernameA+"&password="+hashedPassA+"&ruolo="+ruoloA+"&nome="+user+"&passwordAddetto="+hashedPass+"&ruoloAddetto="+ruolo;
+    let url = "http://localhost:8080/personale/addPersonale?username="+usernameA+"&password="+passwordA+"&ruolo="+ruoloA+"&nome="+user+"&passwordAddetto="+hashedPass+"&ruoloAddetto="+ruolo;
     try {
         let response = await fetch(url);
-        let data = await response.json();
-        if(data == "ok"){
+        let testo = await response.text();
+        if(testo == "ok"){
             return  "ok";
         }
         return  "errore";

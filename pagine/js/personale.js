@@ -30,13 +30,5 @@ class PersonaleTerminal {
     toString() {
         return "ID: "+this.id+", Username: "+this.username + "Ruolo: "+this.ruolo;
     }
-
-    Parse(str){
-        let vett=str.split(",");
-        this.id=vett[0];
-        this.username=vett[1];
-        this.password=vett[2];
-        this.ruolo=vett[3];
-    }
   }
   

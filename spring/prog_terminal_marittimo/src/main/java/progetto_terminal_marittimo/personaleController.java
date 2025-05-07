@@ -14,7 +14,7 @@ public class personaleController {
     @GetMapping("/addPersonale")
     public String addPersonale(@RequestParam String username,  @RequestParam String password, @RequestParam String ruolo, @RequestParam String nome, @RequestParam String passwordAddetto, @RequestParam String ruoloAddetto) {
      
-        if (personaleDao.trovaAddetto(username, password).size()==0 || ruolo.equals("Admin")) {
+        if (personaleDao.trovaAddetto(username, password).size()==0 || !ruolo.equals("Admin")) {
             return "errore";
         }
         

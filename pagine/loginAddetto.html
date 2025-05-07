@@ -43,7 +43,6 @@
       let user=document.getElementById("username").value;
       let password=document.getElementById("password").value;
       let risultato = await loginPersonale(user, password);
-      console.log(risultato);
   
       if (risultato !== "ok") {
         messaggio.textContent = "Credenziali errate o errore nel login.";
@@ -55,10 +54,11 @@
         messaggio.textContent = "Errore: dati dell'addetto non trovati.";
         return;
       }
+      let pers=JSON.parse(personaleJSON);
+      let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
+      
   
-      let personale = JSON.parse(personaleJSON);
-  
-      switch (personale.ruolo) {
+      switch (p.getRuolo()) {
         case "Admin":
           window.location.href = "admin.html";
           break;
@@ -69,7 +69,7 @@
           window.location.href = "erogatore.html";
           break;
         default:
-          messaggio.textContent = "Ruolo non riconosciuto: " + personale.ruolo;
+          messaggio.textContent = "Ruolo non riconosciuto: " + p.getRuolo();
       }
     }
   </script>  

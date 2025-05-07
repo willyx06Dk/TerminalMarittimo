@@ -20,7 +20,7 @@ public class personaleDao {
         
         if (l.isEmpty()) {
             try (Connection conn = DriverManager.getConnection(GestoreDb.URL, GestoreDb.USER, GestoreDb.PASSWORD)) {
-                String sql = "INSERT INTO personale_terminale (nome, password, ruolo) VALUES (?, ?, ?)";
+                String sql = "INSERT INTO personale_terminale (username, password, ruolo) VALUES (?, ?, ?)";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, nome);
                 stmt.setString(2, password);
