@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @CrossOrigin(origins = "*")
 @Repository
-public class merciDao {
+public class portoDao {
     
     public String inserisci(String nome, String naz) {
         List<porto> l = this.trovaPorto(nome, naz);

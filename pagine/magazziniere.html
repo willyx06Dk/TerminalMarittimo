@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>pagina magazziniere</title>
+  <style>
+    body { font-family: Arial; padding: 40px; background-color: #f0f0f0; }
+    .login-box {
+      background-color: #fff;
+      max-width: 400px;
+      margin: auto;
+      border: 1px solid #ccc;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .errore {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+  <script src="js/gestoreChiamate.js"></script>
+  <script src="js/personale.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        async function inserisciMerce() {
+            let messaggio = document.getElementById("messaggio");
+            let nome=document.getElementById("nomeM").value;
+            let categoria=document.getElementById("categoria").value;
+
+            let risultato = await addAddetto(nome, categoria);
+
+            if (risultato !== "ok") {
+                messaggio.textContent = "merce già esistente o errore nell'inserimento delle credenziali.";
+                return;
+            }
+
+            alert("merce inserita con successo");
+            setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
+        }
+
+        async function inserisciMerce() {
+            let messaggio = document.getElementById("messaggio");
+            let nome=document.getElementById("nomeM").value;
+            let categoria=document.getElementById("categoria").value;
+
+            let risultato = await addMerce(nome, categoria);
+
+            if (risultato !== "ok") {
+                messaggio.textContent = "merce già esistente o errore nell'inserimento delle credenziali.";
+                return;
+            }
+
+            alert("merce inserita con successo");
+            setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
+        }
+
+        async function inserisciNave() {
+            let messaggio = document.getElementById("messaggio");
+            let nome=document.getElementById("nomeN").value;
+
+            let risultato = await addNave(nome);
+
+            if (risultato !== "ok") {
+                messaggio.textContent = "nave già esistente o errore nell'inserimento delle credenziali.";
+                return;
+            }
+
+            alert("nave inserita con successo");
+            setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
+        }
+
+        async function inserisciPorto() {
+            let messaggio = document.getElementById("messaggio");
+            let nome=document.getElementById("nomeP").value;
+            let nazionalita=document.getElementById("nazionalita").value;
+
+            let risultato = await addPorto(nome, nazionalita);
+
+            if (risultato !== "ok") {
+                messaggio.textContent = "porto già esistente o errore nell'inserimento delle credenziali.";
+                return;
+            }
+
+            alert("porto inserito con successo");
+            setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
+        }
+
+      function controlla(){
+        let personaleJSON = sessionStorage.getItem("personale");
+        if (!personaleJSON) {
+          window.location.href = "loginAddetto.html";
+          return;
+        }
+        let pers=JSON.parse(personaleJSON);
+        let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
+        if(p.getRuolo()!="Magazziniere"){
+          window.location.href = "loginAddetto.html";
+          return;
+        }
+      }
+
+      function esci(){
+        sessionStorage.clear();
+        window.location.href = "loginAddetto.html";
+        return;
+      }
+    </script>  
+</head>
+<body onload="controlla()">
+    <h1>Zona Magazziniere</h1>
+    <div>
+        <h2>inserisci merce</h2>
+        <input type="text" id="nomeM" placeholder="nome" />
+        <input type="text" id="categoria" placeholder="categoria" />
+        <button onclick="inserisciMerce()">inserisci</button>
+    </div>
+    <div>
+        <h2>inserisci nave</h2>
+        <input type="text" id="nomeN" placeholder="nome" />
+        <button onclick="inserisciNave()">inserisci</button>
+    </div>
+    <div>
+        <h2>inserisci porto</h2>
+        <input type="text" id="nomeP" placeholder="nome" />
+        <input type="text" id="nazionalita" placeholder="nazionalità" />
+        <button onclick="inserisciPorto()">inserisci</button>
+    </div>
+    <div id="messaggio" class="errore"></div>
+    <button onclick="esci()">esci</button>
+</body>
+</html>

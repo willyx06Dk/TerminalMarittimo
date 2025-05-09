@@ -109,3 +109,48 @@ async function addAddetto(user, pass, ruolo, usernameA, passwordA, ruoloA) {
     }
 }
 
+async function addMerce(nome, categoria) {
+    let url = "http://localhost:8080/merce/registra?nome="+nome+"&categoria="+categoria;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo == "ok"){
+            return  "ok";
+        }
+        return  "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function addNave(nome) {
+    let url = "http://localhost:8080/nave/registra?nome="+nome;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo == "ok"){
+            return  "ok";
+        }
+        return  "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function addPorto(nome, nazionalita) {
+    let url = "http://localhost:8080/porto/registra?nome="+nome+"&nazionalita="+nazionalita;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo == "ok"){
+            return  "ok";
+        }
+        return  "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
