@@ -36,6 +36,9 @@
   </style>
   <script src="js/gestoreChiamate.js"></script>
   <script src="js/personale.js"></script>
+  <script src="js/porto.js"></script>
+  <script src="js/merce.js"></script>
+  <script src="js/nave.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
         async function inserisciMerce() {
@@ -46,7 +49,7 @@
             let risultato = await addAddetto(nome, categoria);
 
             if (risultato !== "ok") {
-                messaggio.textContent = "merce già esistente o errore nell'inserimento delle credenziali.";
+                messaggio.textContent = "merce già esistente o errore nell'inserimento dei dat.";
                 return;
             }
 
@@ -62,7 +65,7 @@
             let risultato = await addMerce(nome, categoria);
 
             if (risultato !== "ok") {
-                messaggio.textContent = "merce già esistente o errore nell'inserimento delle credenziali.";
+                messaggio.textContent = "merce già esistente o errore nell'inserimento dei dat.";
                 return;
             }
 
@@ -77,7 +80,7 @@
             let risultato = await addNave(nome);
 
             if (risultato !== "ok") {
-                messaggio.textContent = "nave già esistente o errore nell'inserimento delle credenziali.";
+                messaggio.textContent = "nave già esistente o errore errore nell'inserimento dei dat.";
                 return;
             }
 
@@ -93,7 +96,7 @@
             let risultato = await addPorto(nome, nazionalita);
 
             if (risultato !== "ok") {
-                messaggio.textContent = "porto già esistente o errore nell'inserimento delle credenziali.";
+                messaggio.textContent = "porto già esistente o errore nell'inserimento dei dati.";
                 return;
             }
 
@@ -101,7 +104,7 @@
             setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
         }
 
-      function controlla(){
+      async function controlla(){
         let personaleJSON = sessionStorage.getItem("personale");
         if (!personaleJSON) {
           window.location.href = "loginAddetto.html";
@@ -113,6 +116,58 @@
           window.location.href = "loginAddetto.html";
           return;
         }
+
+        let navi=await getNavi();
+        if(Array.isArray(navi)){
+            popolaSelect(navi, "id_nave");
+        }
+
+        let porti=await getPorti();
+        if(Array.isArray(porti)){
+            popolaSelect(porti, "porto_partenza");
+            popolaSelect(porti, "porto_arrivo");
+        }
+
+      }
+
+      function popolaSelect(vett, id_select){
+        let select = document.getElementById(id_select);
+        select.innerHTML = "";
+
+        vett.forEach(item => {
+            let option = document.createElement("option");
+            option.value = item.getID();
+            option.textContent = item.getNome();
+            select.appendChild(option);
+        });
+      }
+      
+      async function inserisciviaggio() {
+          let messaggio = document.getElementById("messaggio");
+          let dataPartenza = document.getElementById("dataP").value;
+          let dataArrivo = document.getElementById("dataA").value;
+          let portoPartenza = document.getElementById("porto_partenza").value;
+          let portoArrivo = document.getElementById("porto_arrivo").value;
+          let direttrice = document.getElementById("direttrice").value;
+          let nave = document.getElementById("id_nave").value;
+
+          let personaleJSON = sessionStorage.getItem("personale");
+          if (!personaleJSON) {
+            window.location.href = "loginAddetto.html";
+            return;
+          }
+          let pers=JSON.parse(personaleJSON);
+          let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
+
+          let risultato = await addViaggio(dataPartenza, dataArrivo, portoPartenza, portoArrivo, direttrice, p.getID(), nave);
+
+          if (risultato !== "ok") {
+              messaggio.textContent = "errore nell'inserimento del viaggio.";
+              return;
+          }
+
+          alert("viaggio inserito con successo");
+          setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
       }
 
       function esci(){
@@ -140,6 +195,35 @@
         <input type="text" id="nomeP" placeholder="nome" />
         <input type="text" id="nazionalita" placeholder="nazionalità" />
         <button onclick="inserisciPorto()">inserisci</button>
+    </div>
+    <div>
+      <h2>registra viaggio</h2>
+      <label for="id_nave">nave</label>
+      <select name="id_nave" id="id_nave">
+
+      </select>
+      <input type="date" id="dataP" placeholder="data partenza"/>
+      <input type="date" id="dataA" placeholder="data partenza"/>
+      <label for="porto_partenza">porto di partenza</label>
+      <select name="porto_partenza" id="porto_partenza">
+
+      </select>
+      <label for="porto_arrivo">porto di arrivo</label>
+      <select name="porto_arrivo" id="porto_arrivo">
+
+      </select>
+      <label for="direttrice">direttrice</label>
+      <select name="direttrice" id="direttrice">
+        <option value="nord">Nord</option>
+        <option value="nord-est">Nord-Est</option>
+        <option value="est">Est</option>
+        <option value="sud-est">Sud-Est</option>
+        <option value="sud">Sud</option>
+        <option value="sud-ovest">Sud-Ovest</option>
+        <option value="ovest">Ovest</option>
+        <option value="nord-ovest">Nord-Ovest</option>
+      </select>
+      <button onclick="inserisciviaggio()">registra</button>
     </div>
     <div id="messaggio" class="errore"></div>
     <button onclick="esci()">esci</button>

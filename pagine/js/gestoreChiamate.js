@@ -154,3 +154,121 @@ async function addPorto(nome, nazionalita) {
     }
 }
 
+async function getPorti() {
+    let url = "http://localhost:8080/porto/ottieni";
+    try {
+        let response = await fetch(url);
+        let data = await response.json();
+        if (!Array.isArray(data)) {
+            console.log("Errore");
+            return null;
+        }
+        let vett=[];
+        for (let index = 0; index < data.length; index++) {
+            let element = data[index];
+            let porto=new Porto(element.id, element.nome, element.nazionalita);
+            vett.push(porto);
+        }
+        return vett;
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return null;
+    }
+}
+
+async function getMerci() {
+    let url = "http://localhost:8080/merce/ottieni";
+    try {
+        let response = await fetch(url);
+        let data = await response.json();
+        if (!Array.isArray(data)) {
+            console.log("Errore");
+            return null;
+        }
+        let vett=[];
+        for (let index = 0; index < data.length; index++) {
+            let element = data[index];
+            let porto=new Merce(element.id, element.nome, element.categoria);
+            vett.push(porto);
+        }
+        return vett;
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return null;
+    }
+}
+
+async function getNavi() {
+    let url = "http://localhost:8080/nave/ottieni";
+    try {
+        let response = await fetch(url);
+        let data = await response.json();
+        if (!Array.isArray(data)) {
+            console.log("Errore");
+            return null;
+        }
+        let vett=[];
+        for (let index = 0; index < data.length; index++) {
+            let element = data[index];
+            let porto=new Nave(element.id, element.nome);
+            vett.push(porto);
+        }
+        return vett;
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return null;
+    }
+}
+
+async function addViaggio(dp, da, pp, pa, d, add, nav) {
+    let url = "http://localhost:8080/viaggio/aggiungi?dp="+dp+"&da="+da+"&pp="+pp+"&pa="+pa+"&d="+d+"&add="+add;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo == "ok"){
+            let id_viaggio=getIdViaggio(dp, da, pp, pa, d, add);
+            if (id_viaggio==-1) {
+                return "errore";
+            }
+            if(addViaggioRegistrato(nav, id_viaggio)=="ok"){
+                return "ok";
+            }
+            return "errore";
+        }
+        return  "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function addViaggioRegistrato(id_nave, id_viaggio) {
+    let url = "http://localhost:8080/viaggiRegistrati/id_nave?="+id_nave+"&id_viaggio="+id_viaggio;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo == "ok"){
+            return  "ok";
+        }
+        return  "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function getIdViaggio(dp, da, pp, pa, d, add) {
+    let url = "http://localhost:8080/viaggio/ottieni?dp="+dp+"&da="+da+"&pp="+pp+"&pa="+pa+"&d="+d+"&add="+add;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo != -1){
+            return  testo;
+        }
+        return -1;
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return -1;
+    }
+}
+
