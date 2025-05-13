@@ -2,11 +2,13 @@ class Fornitore {
     id;
     username;
     password;
+    nome;
   
-    constructor(id, username, password) {
+    constructor(id, username, password, n) {
       this.id = id;
       this.username = username;
       this.password = password;
+      this.nome=n;
     }
   
     getID() {
@@ -19,6 +21,10 @@ class Fornitore {
   
     getPassword() {
       return this.password;
+    }
+
+    getNome() {
+      return this.nome;
     }
   
     toString() {

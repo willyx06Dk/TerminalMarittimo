@@ -49,7 +49,7 @@ async function loginFornitore(user, pass) {
             console.log("Errore");
             return "errore";
         }
-        let f = new Fornitore(data.id, data.username, data.password);
+        let f = new Fornitore(data.id, data.username, data.password, data.nome);
         sessionStorage.setItem("fornitore", JSON.stringify(f));
         return "ok";
     } catch (error) {
@@ -243,7 +243,7 @@ async function addViaggio(dp, da, pp, pa, d, add, nav) {
 }
 
 async function addViaggioRegistrato(id_nave, id_viaggio) {
-    let url = "http://localhost:8080/viaggiRegistrati/id_nave?="+id_nave+"&id_viaggio="+id_viaggio;
+    let url = "http://localhost:8080/viaggiRegistrati/aggiung?id_nave?="+id_nave+"&id_viaggio="+id_viaggio;
     try {
         let response = await fetch(url);
         let testo = await response.text();
@@ -271,4 +271,81 @@ async function getIdViaggio(dp, da, pp, pa, d, add) {
         return -1;
     }
 }
+
+async function addPolizza(q, v, m, f, add, d) {
+    let url = "http://localhost:8080/polizza/aggiungi?q="+q+"&v="+v+"&m="+m+"&f="+f;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo == "ok"){
+            if(addMagazzino(q, m ,add, d)=="ok"){
+                return "ok";
+            }
+            return "errore";
+        }
+        return  "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function addMagazzino(q, m, add, d) {
+    let url = "http://localhost:8080/magazzino/inserisci/q?="+q+"&m="+m+"&a="+add+"&d="+d;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo == "ok"){
+            return  "ok";
+        }
+        return  "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+
+async function getFornitori() {
+    let url = "http://localhost:8080/fornitore/ottieni";
+    try {
+        let response = await fetch(url);
+        let data = await response.json();
+        if (!Array.isArray(data)) {
+            console.log("Errore");
+            return null;
+        }
+        let vett=[];
+        for (let index = 0; index < data.length; index++) {
+            let element = data[index];
+            let fornitore=new Fornitore(element.id, element.username, element.password, element.nome);
+            vett.push(fornitore);
+        }
+        return vett;
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return null;
+    }
+}
+
+async function getViaggiDati() {
+    let url = "http://localhost:8080/viaggiReggistrati/ottieni";
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo != ""){
+            let vett=[];
+            for (let index = 0; index < data.length; index++) {
+                let element = data[index];
+                vett.push(element);
+            }
+            return  vett;
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
 

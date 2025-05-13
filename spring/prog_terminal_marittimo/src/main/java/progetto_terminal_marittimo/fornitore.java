@@ -4,12 +4,14 @@ public class fornitore {
     private int ID;
     private String username;
     private String password;
+    private String nome;
 
 
-    public fornitore(int id, String u, String p){
+    public fornitore(int id, String u, String p, String n){
         this.ID=id;
         this.username=u;
         this.password=p;
+        this.nome=n;
     }
 
     public int getID(){
@@ -22,5 +24,9 @@ public class fornitore {
 
     public String getPassword(){
         return this.password;
+    }
+
+    public String getNome(){
+        return this.nome;
     }
 }

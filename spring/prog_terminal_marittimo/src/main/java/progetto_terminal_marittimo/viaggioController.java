@@ -3,6 +3,7 @@ package progetto_terminal_marittimo;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,5 +26,10 @@ public class viaggioController {
     @GetMapping("/ottieni")
     public int ottieniViaggio(@RequestParam Date dp, @RequestParam Date da, @RequestParam int pp, @RequestParam int pa, @RequestParam String d, @RequestParam int add) {
         return viaggioDao.getIdViaggio(dp, da, pp, pa, d, add);
+    }
+
+    @GetMapping("/ottieniViaggi")
+    public List<viaggio> ottieniViaggii() {
+        return viaggioDao.getViaggi();
     }
 }

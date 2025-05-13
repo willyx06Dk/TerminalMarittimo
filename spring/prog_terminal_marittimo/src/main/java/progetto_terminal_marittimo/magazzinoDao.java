@@ -21,10 +21,12 @@ public class magazzinoDao {
         
         if (l.isEmpty()) {
             try (Connection conn = DriverManager.getConnection(GestoreDb.URL, GestoreDb.USER, GestoreDb.PASSWORD)) {
-                String sql = "INSERT INTO merce (nome, categoria) VALUES (?, ?)";
+                String sql = "INSERT INTO magazzino (quantita_merce, id_merce, id_addetto, data_ultima_modifica) VALUES (?, ?, ?, ?)";
                 PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setString(1, nome);
-                stmt.setString(2, categoria);
+                stmt.setInt(1, q);
+                stmt.setInt(2, m);
+                stmt.setInt(3, a);
+                stmt.setDate(4, d);
                 stmt.executeUpdate();
                 return "ok";
             } catch (SQLException e) {
@@ -32,7 +34,9 @@ public class magazzinoDao {
                 return "errore";
             }
         } else {
-            return "errore, utente già presente";
+            int id=l.get(0).getID();
+            int quant=q+l.get(0).getQuantita();
+            return modificaQ(quant, id);
         }
     }
 
@@ -62,6 +66,30 @@ public class magazzinoDao {
         }
         return lista;
     }
+
+    public String modificaQ(int q, int id) {
+        try (Connection conn = DriverManager.getConnection(GestoreDb.URL, GestoreDb.USER, GestoreDb.PASSWORD)) {
+            String sql = "UPDATE magazzino SET quantita_merce=? WHERE ID=?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, q);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+            return "ok";
+        } catch (SQLException e) {
+            return "errore";
+        }
+    }
+
+    public int trovaIDmagazzino(int q, int m, int a, Date d) {
+        List<magazzino> l = this.trovaMagazzino(q, m, a, d);
+        
+        if (l.isEmpty()) {
+            return -1;
+        } else {
+            return l.get(0).getID();
+        }
+    }
+
 }
     
 

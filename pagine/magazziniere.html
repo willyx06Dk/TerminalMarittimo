@@ -41,38 +41,6 @@
   <script src="js/nave.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
-        async function inserisciMerce() {
-            let messaggio = document.getElementById("messaggio");
-            let nome=document.getElementById("nomeM").value;
-            let categoria=document.getElementById("categoria").value;
-
-            let risultato = await addAddetto(nome, categoria);
-
-            if (risultato !== "ok") {
-                messaggio.textContent = "merce già esistente o errore nell'inserimento dei dat.";
-                return;
-            }
-
-            alert("merce inserita con successo");
-            setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
-        }
-
-        async function inserisciMerce() {
-            let messaggio = document.getElementById("messaggio");
-            let nome=document.getElementById("nomeM").value;
-            let categoria=document.getElementById("categoria").value;
-
-            let risultato = await addMerce(nome, categoria);
-
-            if (risultato !== "ok") {
-                messaggio.textContent = "merce già esistente o errore nell'inserimento dei dat.";
-                return;
-            }
-
-            alert("merce inserita con successo");
-            setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
-        }
-
         async function inserisciNave() {
             let messaggio = document.getElementById("messaggio");
             let nome=document.getElementById("nomeN").value;
@@ -180,12 +148,6 @@
 <body onload="controlla()">
     <h1>Zona Magazziniere</h1>
     <div>
-        <h2>inserisci merce</h2>
-        <input type="text" id="nomeM" placeholder="nome" />
-        <input type="text" id="categoria" placeholder="categoria" />
-        <button onclick="inserisciMerce()">inserisci</button>
-    </div>
-    <div>
         <h2>inserisci nave</h2>
         <input type="text" id="nomeN" placeholder="nome" />
         <button onclick="inserisciNave()">inserisci</button>
@@ -225,6 +187,7 @@
       </select>
       <button onclick="inserisciviaggio()">registra</button>
     </div>
+    <button onclick="paginaPolizze()">polizze</button>
     <div id="messaggio" class="errore"></div>
     <button onclick="esci()">esci</button>
 </body>

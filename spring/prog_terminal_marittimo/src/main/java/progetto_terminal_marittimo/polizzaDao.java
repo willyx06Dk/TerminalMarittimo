@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @CrossOrigin(origins = "*")
 @Repository
-public class fornitoreDao {
+public class polizzaDao {
     
-    public String inserisci(String nome, String username, String password, String email) {
-        List<fornitore> l = this.trovaFornitore(nome, password);
+    public String inserisci(int q, int v, int m, int f) {
+        List<polizza> l = this.trovaPolizza(q, v, m, f);
         
         if (l.isEmpty()) {
             try (Connection conn = DriverManager.getConnection(GestoreDb.URL, GestoreDb.USER, GestoreDb.PASSWORD)) {
-                String sql = "INSERT INTO fornitore (nome, email, username, password) VALUES (?, ?, ?, ?)";
+                String sql = "INSERT INTO polizza (quantita_merce, id_viaggio, id_merce, id_fornitore) VALUES (?, ?, ?, ?)";
                 PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setString(1, nome);
-                stmt.setString(2, username);
-                stmt.setString(3, password);
-                stmt.setString(4, email);
+                stmt.setInt(1, q);
+                stmt.setInt(2, v);
+                stmt.setInt(3, m);
+                stmt.setInt(4, f);
                 stmt.executeUpdate();
                 return "ok";
             } catch (SQLException e) {
@@ -37,23 +37,26 @@ public class fornitoreDao {
         }
     }
 
-    public List<fornitore> trovaFornitore(String n, String p) {
-        List<fornitore> lista = new ArrayList<>();
+    public List<polizza> trovaPolizza(int q, int v, int m, int f) {
+        List<polizza> lista = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(GestoreDb.URL, GestoreDb.USER, GestoreDb.PASSWORD)) {
-            String sql = "SELECT * FROM fornitore WHERE username=? AND password=?";
+            String sql = "SELECT * FROM polizza WHERE quantita_merce=? AND id_viaggio=? AND id_merce=? AND id_fornitore=?";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, n);
-            stmt.setString(2, p);
+            stmt.setInt(1, q);
+            stmt.setInt(2, v);
+            stmt.setInt(3, m);
+            stmt.setInt(4, f);
             stmt.executeUpdate();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                fornitore u = new fornitore(
+                polizza pol = new polizza(
                     rs.getInt("id"),
-                    rs.getString("nome"),
-                    rs.getString("password"),
-                    rs.getString("nome")
+                    rs.getInt("quantita_merce"),
+                    rs.getInt("id_viaggio"),
+                    rs.getInt("id_merce"),
+                    rs.getInt("id_fornitore")
                 );
-                lista.add(u);
+                lista.add(pol);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,32 +64,23 @@ public class fornitoreDao {
         return lista;
     }
 
-    public fornitore login(String n, String p) {
-        List<fornitore> l = this.trovaFornitore(n, p);
-        
-        if (!l.isEmpty() && l.size()==1) {
-            int id=l.get(0).getID();
-            return new fornitore(id, n, p, l.get(0).getNome());
-        } else {
-            return null;
-        }
-    }
-
-    public List<fornitore> getFornitori() {
-        List<fornitore> lista = new ArrayList<>();
+    public List<polizza> ottieniPolizzaFornitore(int idFornitore) {
+        List<polizza> lista = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(GestoreDb.URL, GestoreDb.USER, GestoreDb.PASSWORD)) {
-            String sql = "SELECT * FROM fornitore";
+            String sql = "SELECT * FROM polizza WHERE id_fornitore=?";
             PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, idFornitore);
             stmt.executeUpdate();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                fornitore u = new fornitore(
+                polizza pol = new polizza(
                     rs.getInt("id"),
-                    rs.getString("nome"),
-                    rs.getString("password"),
-                    rs.getString("nome")
+                    rs.getInt("quantita_merce"),
+                    rs.getInt("id_viaggio"),
+                    rs.getInt("id_merce"),
+                    rs.getInt("id_fornitore")
                 );
-                lista.add(u);
+                lista.add(pol);
             }
         } catch (SQLException e) {
             e.printStackTrace();

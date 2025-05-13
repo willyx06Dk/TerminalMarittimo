@@ -1,6 +1,9 @@
 package progetto_terminal_marittimo;
 
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
@@ -28,5 +31,11 @@ public class fornitoreController {
     @GetMapping("/login")
     public Object loginFornitore(@RequestParam String username,  @RequestParam String password) {
         return fornitoreDao.login(username, password);
+    }
+
+
+    @GetMapping("/ottieni")
+    public List<fornitore> getFornitori() {
+        return fornitoreDao.getFornitori();
     }
 }

@@ -81,4 +81,29 @@ public class viaggioDao {
             return -1;
         }
     }
+
+    public List<viaggio> getViaggi() {
+        List<viaggio> lista = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(GestoreDb.URL, GestoreDb.USER, GestoreDb.PASSWORD)) {
+            String sql = "SELECT * FROM viaggio";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.executeUpdate();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                viaggio u = new viaggio(
+                    rs.getInt("id"),
+                    rs.getDate("data_partenza"),
+                    rs.getDate("data_arrivo"),
+                    rs.getInt("porto_partenza"),
+                    rs.getInt("porto_arrivo"),
+                    rs.getString("direttrice"),
+                    rs.getInt("id_addetto")
+                );
+                lista.add(u);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
 }
