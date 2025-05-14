@@ -29,4 +29,10 @@ public class utenteController {
     public Object loginCliente(@RequestParam String username,  @RequestParam String password) {
         return clienteDao.login(username, password);
     }
+
+    @GetMapping("/ottieniNome")
+    public String ottieniNome(@RequestParam int id) {
+        return clienteDao.ottieniNome(id);
+    }
+
 }

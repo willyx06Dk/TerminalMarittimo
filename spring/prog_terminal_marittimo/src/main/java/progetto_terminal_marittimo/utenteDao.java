@@ -72,4 +72,21 @@ public class utenteDao {
             return null;
         }
     }
+
+    public String ottieniNome(int id) {
+        try (Connection conn = DriverManager.getConnection(GestoreDb.URL, GestoreDb.USER, GestoreDb.PASSWORD)) {
+            String sql = "SELECT * FROM cliente WHERE ID=?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                return rs.getString("nome");
+            }
+            return "";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 }

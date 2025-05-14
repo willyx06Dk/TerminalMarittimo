@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Pagina Erogazione</title>
+  <style>
+    body { font-family: Arial; padding: 40px; background-color: #f0f0f0; }
+    .login-box {
+      background-color: #fff;
+      max-width: 900px;
+      margin: auto;
+      border: 1px solid #ccc;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 8px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .errore {
+      color: red;
+      margin-top: 15px;
+    }
+  </style>
+  <script src="js/gestoreChiamate.js"></script>
+  <script src="js/merce.js"></script>
+  <script src="js/clienti.js"></script>
+  <script src="js/personale.js"></script>
+  <script>
+    async function inizializzaErogazione() {
+      let personaleJSON = sessionStorage.getItem("personale");
+      if (!personaleJSON || JSON.parse(personaleJSON).getRuolo() !== "Erogatore") {
+        window.location.href = "loginAddetto.html";
+        return;
+      }
+
+      await caricaRichieste();
+    }
+
+    async function caricaRichieste() {
+      let richieste = await getRichieste();
+      let tabella = document.getElementById("tabellaRichieste");
+      tabella.innerHTML = "";
+
+      if (!Array.isArray(richieste) || richieste.length === 0) {
+        tabella.innerHTML = "<tr><td colspan='5'>Nessuna richiesta da mostrare</td></tr>";
+        return;
+      }
+
+      
+        let header = document.createElement("tr");
+        let th1 = document.createElement("th");
+        th1.textContent = "Cliente";
+        header.appendChild(th1);
+
+        let th2 = document.createElement("th");
+        th2.textContent = "Merce";
+        header.appendChild(th2);
+
+        let th3 = document.createElement("th");
+        th3.textContent = "Quantità";
+        header.appendChild(th3);
+
+        let th4 = document.createElement("th");
+        th4.textContent = "Data";
+        header.appendChild(th4);
+
+        let th5 = document.createElement("th");
+        th5.textContent = "Azione";
+        header.appendChild(th5);
+
+        tabella.appendChild(header);
+
+        for (let r of richieste) {
+            let tr = document.createElement("tr");
+
+            let nomeCliente = await getNomeCliente(r.id_cliente);
+            let nomeMerce = await getNomeMerce(r.id_merce);
+
+            tr.innerHTML = "<td>" + nomeCliente + "</td><td>" + nomeMerce + "</td><td>" + r.quantita + "</td><td>" + r.data + "</td>";
+
+            let tdAzione = document.createElement("td");
+            let bottone = document.createElement("button");
+            bottone.textContent = "Eroga";
+            bottone.onclick = () => eroga(r.quantita ,r.id_merce, r,id_cliente);
+            tdAzione.appendChild(bottone);
+            tr.appendChild(tdAzione);
+
+            tabella.appendChild(tr);
+        }
+    }
+
+    async function eroga(quantita, merce, cliente) {
+      let esito = document.getElementById("esitoErogazione");
+      let data=new Date();
+      let personaleJSON = sessionStorage.getItem("personale");
+      let id_personaleJSON = JSON.parse(personaleJSON).getID();
+      let risultato = await addBuono(quantita, data, id_personaleJSON, cliente, merces);
+
+      if (risultato === "ok") {
+        esito.textContent = "";
+        alert("Buono erogato con successo");
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        esito.textContent = "Errore durante l'erogazione del buono.";
+      }
+    }
+
+    function esci() {
+      sessionStorage.clear();
+      window.location.href = "loginErgatore.html";
+    }
+  </script>
+</head>
+<body onload="inizializzaErogazione()">
+  <div class="login-box">
+    <h2>Benvenuto Erogatore</h2>
+    <h3>Richieste da Erogare</h3>
+
+    <table id="tabellaRichieste"></table>
+    <div id="esitoErogazione" class="errore"></div>
+
+    <button onclick="esci()">Esci</button>
+  </div>
+</body>
+</html>

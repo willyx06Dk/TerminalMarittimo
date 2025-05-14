@@ -29,4 +29,9 @@ public class personaleController {
     public Object loginAddetto(@RequestParam String username,  @RequestParam String password) {
         return personaleDao.login(username, password);
     }
+
+    @GetMapping("/ottieniNome")
+    public String ottieniNome(@RequestParam int id) {
+        return personaleDao.ottieniNome(id);
+    }
 }

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>pagina cliente</title>
+  <style>
+    body { font-family: Arial; padding: 40px; background-color: #f0f0f0; }
+    .login-box {
+      background-color: #fff;
+      max-width: 400px;
+      margin: auto;
+      border: 1px solid #ccc;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .errore {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+  <script src="js/gestoreChiamate.js"></script>
+  <script src="js/cliente.js"></script>
+  <script src="js/merce.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        async function inizializzaCliente() {
+        let clienteJSON = sessionStorage.getItem("cliente");
+        if (!clienteJSON) {
+            window.location.href = "loginCliente.html";
+            return;
+        }
+
+        await caricaBuoni();
+        }
+
+        async function inviaRichiesta() {
+            let cliente = JSON.parse(sessionStorage.getItem("cliente"));
+            let id_cliente = cliente.id;
+            let id_merce = document.getElementById("id_merce").value;
+            let quantita = document.getElementById("quantita").value;
+            let messaggio = document.getElementById("esitoRichiesta");
+
+            let risultato = await addRichiesta(id_cliente, id_merce, quantita);
+            if (risultato != "ok") 
+                messaggio.textContent = "Errore durante l'invio della richiesta.";
+
+            alert("polizza inserita con successo");
+            setTimeout(() => {window.location.href = "cliente.html";}, 1000);
+        }
+
+        async function caricaBuoni() {
+            let cliente = JSON.parse(sessionStorage.getItem("cliente"));
+            let id_cliente = cliente.id;
+            let lista = document.getElementById("listaBuoni");
+            lista.innerHTML = "";
+
+            let buoni = await getBuoniCliente(id_cliente);
+            if (Array.isArray(buoni)) {
+                buoni.forEach(b => {
+                let table = document.createElement("table");
+                let header = table.createTHead();
+                let headerRow = header.insertRow();
+                let th1 = document.createElement("th");
+                th1.textContent = "ID";
+                headerRow.appendChild(th1);
+                let th2 = document.createElement("th");
+                th2.textContent = "Quantità";
+                headerRow.appendChild(th2);
+                let th3 = document.createElement("th");
+                th3.textContent = "ID Merce";
+                headerRow.appendChild(th3);
+                let th4 = document.createElement("th");
+                th4.textContent = "Data Rilascio";
+                headerRow.appendChild(th4);
+                let tbody = table.createTBody();
+                buoni.forEach(b => {
+                    let row = tbody.insertRow();
+                    row.insertCell().textContent = b.ID;
+                    row.insertCell().textContent = b.quantita;
+                    row.insertCell().textContent = b.id_merce;
+                    row.insertCell().textContent = b.data_rilascio;
+                });
+                lista.appendChild(table);
+                });
+            } else {
+                lista.innerHTML = "Nessun buono disponibile";
+            }
+        }
+
+        function esci() {
+            sessionStorage.clear();
+            window.location.href = "loginCliente.html";
+        }
+  </script>
+</head>
+<body onload="inizializzaCliente()">
+  <div class="login-box">
+    <h2>Benvenuto cliente</h2>
+    <h3>Invia nuova richiesta</h3>
+    <input type="number" id="id_merce" placeholder="ID merce">
+    <input type="number" id="quantita" placeholder="Quantità richiesta">
+    <button onclick="inviaRichiesta()">Invia richiesta</button>
+
+    <div id="messaggio" class="errore"></div>
+
+    <h3>I tuoi buoni</h3>
+    <div id="listaBuoni">
+    </div>
+
+    <button onclick="esci()">Esci</button>
+  </div>
+</body>
+</html>

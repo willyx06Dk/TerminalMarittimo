@@ -32,4 +32,9 @@ public class merceController {
     public List<merce> ottieniMerce() {
         return merciDao.ottienimerci();
     }
+
+     @GetMapping("/ottieniNome")
+    public String ottieniNomeMerce(@RequestParam int id) {
+        return merciDao.ottieniNomeMerce(id);
+    }
 }

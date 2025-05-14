@@ -78,6 +78,22 @@ public class merceDao {
         }
         return lista;
     }
+
+    public String ottieniNomeMerce(int id) {
+        try (Connection conn = DriverManager.getConnection(GestoreDb.URL, GestoreDb.USER, GestoreDb.PASSWORD)) {
+            String sql = "SELECT * FROM merce WHERE ID=?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                return rs.getString("nome");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }
     
 

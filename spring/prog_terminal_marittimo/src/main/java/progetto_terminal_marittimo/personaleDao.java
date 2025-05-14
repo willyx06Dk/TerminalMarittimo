@@ -64,4 +64,21 @@ public class personaleDao {
             return new personaleTerminal(-1, "", "", "");
         }
     }
+
+    public String ottieniNome(int id) {
+        try (Connection conn = DriverManager.getConnection(GestoreDb.URL, GestoreDb.USER, GestoreDb.PASSWORD)) {
+            String sql = "SELECT * FROM personale WHERE ID=?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                return rs.getString("username");
+            }
+            return "";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 }

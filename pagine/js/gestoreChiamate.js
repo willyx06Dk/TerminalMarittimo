@@ -348,4 +348,128 @@ async function getViaggiDati() {
     }
 }
 
+async function addRichiesta(id_c, id_m, q) {
+    let url = "http://localhost:8080/richiesta/inserisci?id_c="+id_c+"&id_m="+id_m+"&q="+q;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo === "ok") {
+            return "ok";
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function addBuono(quantita, data, id_emittente, id_cliente, id_merce) {
+    let url = "http://localhost:8080/buono/inserisci?quantita="+quantita+"&data="+data+"&id_emittente="+id_emittente+"&id_cliente="+id_cliente+"&id_merce="+id_merce;
+
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo === "ok") {
+            return "ok";
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function getBuoniCliente(id) {
+    let url = "http://localhost:8080/buono/ottieni?id=" + id;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo !== "") {
+            let data = JSON.parse(testo);
+            let vett = [];
+
+            for (let index = 0; index < data.length; index++) {
+                let element = data[index];
+                let nomeMerce = await getNomeMerce(element.id_merce);
+                let nomeEmittente = await getNomeEmittente(element.id_emittente);
+                let buono = new Buono(element.ID,element.quantita_merce,element.data_rilascio, nomeMerce, nomeEmittente, element.id_cliente);
+                vett.push(buono);
+            }
+
+            return vett;
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function getNomeMerce(id) {
+    let url = "http://localhost:8080/merce/ottieniNome?id="+id;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo != ""){
+            return  testo;
+        }
+        return "";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "";
+    }
+}
+
+async function getNomeEmittente(id) {
+    let url = "http://localhost:8080/personale/ottieniNome?id="+id;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo != ""){
+            return  testo;
+        }
+        return "";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "";
+    }
+}
+
+async function getNomeCliente(id) {
+    let url = "http://localhost:8080/cliente/ottieniNome?id="+id;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if(testo != ""){
+            return  testo;
+        }
+        return "";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "";
+    }
+}
+
+async function getRichieste() {
+    let url = "http://localhost:8080/richieste/ottieni";
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo !== "") {
+            let data = JSON.parse(testo);
+            let vett = [];
+            for (let index = 0; index < data.length; index++) {
+                let element = data[index];
+                let richiesta = new Richiesta(element.ID, element.id_cliente, element.id_merce, element.quantita);
+                vett.push(richiesta);
+            }
+            return vett;
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
 
