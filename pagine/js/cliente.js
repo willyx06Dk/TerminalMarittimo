@@ -1,4 +1,4 @@
-class cliente {
+class Cliente {
     id;
     username;
     password;
@@ -22,7 +22,7 @@ class cliente {
     }
   
     toString() {
-      return "ID: "+this.id+", Username: "+this.username;
+      return "Username: "+this.username;
     }
 
     Parse(str){

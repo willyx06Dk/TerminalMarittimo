@@ -1,63 +1,37 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Login Addetto</title>
-  <style>
-    body { font-family: Arial; padding: 40px; background-color: #f0f0f0; }
-    .login-box {
-      background-color: #fff;
-      max-width: 400px;
-      margin: auto;
-      border: 1px solid #ccc;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .errore {
-      color: red;
-      margin-top: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="css/bootstrap.css" />
+
   <script src="js/gestoreChiamate.js"></script>
   <script src="js/personale.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
   <script>
     async function logga() {
       let messaggio = document.getElementById("messaggio");
-      let user=document.getElementById("username").value;
-      let password=document.getElementById("password").value;
+      messaggio.textContent = "";
+
+      let user = document.getElementById("username").value.trim();
+      let password = document.getElementById("password").value;
+
       let risultato = await loginPersonale(user, password);
-  
+
       if (risultato !== "ok") {
         messaggio.textContent = "Credenziali errate o errore nel login.";
         return;
       }
-  
+
       let personaleJSON = sessionStorage.getItem("personale");
       if (!personaleJSON) {
         messaggio.textContent = "Errore: dati dell'addetto non trovati.";
         return;
       }
-      let pers=JSON.parse(personaleJSON);
+      let pers = JSON.parse(personaleJSON);
       let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
-      
-  
+
       switch (p.getRuolo()) {
         case "Admin":
           window.location.href = "admin.html";
@@ -72,13 +46,24 @@
           messaggio.textContent = "Ruolo non riconosciuto: " + p.getRuolo();
       }
     }
-  </script>  
+
+    function indietro() {
+      window.location.href = "index.html";
+    }
+  </script>
 </head>
-  <body>
-      <h2>Login Addetto</h2>
-      <input type="text" id="username" placeholder="Username" />
-      <input type="password" id="password" placeholder="Password" />
-      <button onclick="logga()">Login</button>
-      <div id="messaggio" class="errore"></div>
-  </body>
+<body class="bg-light">
+  <div class="container py-5" style="max-width: 400px;">
+    <div class="card shadow-sm p-4">
+      <h2 class="mb-4 text-center">Login Addetto</h2>
+      <input type="text" id="username" class="form-control mb-3" placeholder="Username" autocomplete="username"/>
+      <input type="password" id="password" class="form-control mb-3" placeholder="Password" autocomplete="current-password"/>
+      <button class="btn btn-primary w-100" onclick="logga()">Login</button>
+      <div id="messaggio" class="text-danger mt-3 text-center"></div>
+      <div class="d-grid mt-4">
+        <button class="btn btn-outline-secondary" onclick="indietro()">Indietro</button>
+      </div>
+    </div>
+  </div>
+</body>
 </html>

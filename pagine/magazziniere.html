@@ -1,181 +1,170 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>pagina magazziniere</title>
-  <style>
-    body { font-family: Arial; padding: 40px; background-color: #f0f0f0; }
-    .login-box {
-      background-color: #fff;
-      max-width: 400px;
-      margin: auto;
-      border: 1px solid #ccc;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .errore {
-      color: red;
-      margin-top: 10px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Pagina Magazziniere</title>
+  <link rel="stylesheet" href="css/bootstrap.css" />
+
   <script src="js/gestoreChiamate.js"></script>
   <script src="js/personale.js"></script>
   <script src="js/porto.js"></script>
   <script src="js/merce.js"></script>
   <script src="js/nave.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script>
-        async function inserisciNave() {
-            let messaggio = document.getElementById("messaggio");
-            let nome=document.getElementById("nomeN").value;
 
-            let risultato = await addNave(nome);
+  <script>
+    async function inserisciNave() {
+      let messaggio = document.getElementById("messaggio");
+      messaggio.textContent = "";
+      let nome = document.getElementById("nomeN").value.trim();
 
-            if (risultato !== "ok") {
-                messaggio.textContent = "nave già esistente o errore errore nell'inserimento dei dat.";
-                return;
-            }
-
-            alert("nave inserita con successo");
-            setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
-        }
-
-        async function inserisciPorto() {
-            let messaggio = document.getElementById("messaggio");
-            let nome=document.getElementById("nomeP").value;
-            let nazionalita=document.getElementById("nazionalita").value;
-
-            let risultato = await addPorto(nome, nazionalita);
-
-            if (risultato !== "ok") {
-                messaggio.textContent = "porto già esistente o errore nell'inserimento dei dati.";
-                return;
-            }
-
-            alert("porto inserito con successo");
-            setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
-        }
-
-      async function controlla(){
-        let personaleJSON = sessionStorage.getItem("personale");
-        if (!personaleJSON) {
-          window.location.href = "loginAddetto.html";
-          return;
-        }
-        let pers=JSON.parse(personaleJSON);
-        let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
-        if(p.getRuolo()!="Magazziniere"){
-          window.location.href = "loginAddetto.html";
-          return;
-        }
-
-        let navi=await getNavi();
-        if(Array.isArray(navi)){
-            popolaSelect(navi, "id_nave");
-        }
-
-        let porti=await getPorti();
-        if(Array.isArray(porti)){
-            popolaSelect(porti, "porto_partenza");
-            popolaSelect(porti, "porto_arrivo");
-        }
-
+      if (!nome) {
+        messaggio.textContent = "Il nome della nave non può essere vuoto.";
+        return;
       }
 
-      function popolaSelect(vett, id_select){
-        let select = document.getElementById(id_select);
-        select.innerHTML = "";
-
-        vett.forEach(item => {
-            let option = document.createElement("option");
-            option.value = item.getID();
-            option.textContent = item.getNome();
-            select.appendChild(option);
-        });
-      }
-      
-      async function inserisciviaggio() {
-          let messaggio = document.getElementById("messaggio");
-          let dataPartenza = document.getElementById("dataP").value;
-          let dataArrivo = document.getElementById("dataA").value;
-          let portoPartenza = document.getElementById("porto_partenza").value;
-          let portoArrivo = document.getElementById("porto_arrivo").value;
-          let direttrice = document.getElementById("direttrice").value;
-          let nave = document.getElementById("id_nave").value;
-
-          let personaleJSON = sessionStorage.getItem("personale");
-          if (!personaleJSON) {
-            window.location.href = "loginAddetto.html";
-            return;
-          }
-          let pers=JSON.parse(personaleJSON);
-          let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
-
-          let risultato = await addViaggio(dataPartenza, dataArrivo, portoPartenza, portoArrivo, direttrice, p.getID(), nave);
-
-          if (risultato !== "ok") {
-              messaggio.textContent = "errore nell'inserimento del viaggio.";
-              return;
-          }
-
-          alert("viaggio inserito con successo");
-          setTimeout(() => {window.location.href = "magazziniere.html";}, 1000);
+      let risultato = await addNave(nome);
+      if (risultato !== "ok") {
+        messaggio.textContent = "Nave già esistente o errore nell'inserimento dei dati.";
+        return;
       }
 
-      function esci(){
-        sessionStorage.clear();
+      alert("Nave inserita con successo");
+      setTimeout(() => window.location.href = "magazziniere.html", 1000);
+    }
+
+    async function inserisciPorto() {
+      let messaggio = document.getElementById("messaggio");
+      messaggio.textContent = "";
+      let nome = document.getElementById("nomeP").value.trim();
+      let nazionalita = document.getElementById("nazionalita").value.trim();
+
+      if (!nome || !nazionalita) {
+        messaggio.textContent = "Tutti i campi devono essere compilati.";
+        return;
+      }
+
+      let risultato = await addPorto(nome, nazionalita);
+      if (risultato !== "ok") {
+        messaggio.textContent = "Porto già esistente o errore nell'inserimento dei dati.";
+        return;
+      }
+
+      alert("Porto inserito con successo");
+      setTimeout(() => window.location.href = "magazziniere.html", 1000);
+    }
+
+    async function controlla() {
+      let personaleJSON = sessionStorage.getItem("personale");
+      if (!personaleJSON) {
         window.location.href = "loginAddetto.html";
         return;
       }
-    </script>  
+      let pers = JSON.parse(personaleJSON);
+      let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
+      if (p.getRuolo() !== "Magazziniere") {
+        window.location.href = "loginAddetto.html";
+        return;
+      }
+
+      let navi = await getNavi();
+      if (Array.isArray(navi)) popolaSelect(navi, "id_nave");
+
+      let porti = await getPorti();
+      if (Array.isArray(porti)) {
+        popolaSelect(porti, "porto_partenza");
+        popolaSelect(porti, "porto_arrivo");
+      }
+    }
+
+    function popolaSelect(vett, id_select) {
+      let select = document.getElementById(id_select);
+      select.innerHTML = "";
+      vett.forEach(item => {
+        let option = document.createElement("option");
+        option.value = item.getID();
+        option.textContent = item.getNome();
+        select.appendChild(option);
+      });
+    }
+
+    async function inserisciviaggio() {
+      let messaggio = document.getElementById("messaggio");
+      messaggio.textContent = "";
+
+      let dataPartenza = document.getElementById("dataP").value;
+      let dataArrivo = document.getElementById("dataA").value;
+      let portoPartenza = document.getElementById("porto_partenza").value;
+      let portoArrivo = document.getElementById("porto_arrivo").value;
+      let direttrice = document.getElementById("direttrice").value;
+      let nave = document.getElementById("id_nave").value;
+
+      let personaleJSON = sessionStorage.getItem("personale");
+      if (!personaleJSON) {
+        window.location.href = "loginAddetto.html";
+        return;
+      }
+      let pers = JSON.parse(personaleJSON);
+      let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
+
+      let risultato = await addViaggio(dataPartenza, dataArrivo, portoPartenza, portoArrivo, direttrice, p.getID(), nave);
+      if (risultato !== "ok") {
+        messaggio.textContent = "Errore nell'inserimento del viaggio.";
+        return;
+      }
+
+      alert("Viaggio inserito con successo");
+      setTimeout(() => window.location.href = "magazziniere.html", 1000);
+    }
+
+    function esci() {
+      sessionStorage.clear();
+      window.location.href = "loginAddetto.html";
+    }
+
+    function paginaPolizze() {
+      window.location.href = "GestionePolizze.html";
+    }
+  </script>
 </head>
-<body onload="controlla()">
-    <h1>Zona Magazziniere</h1>
-    <div>
-        <h2>inserisci nave</h2>
-        <input type="text" id="nomeN" placeholder="nome" />
-        <button onclick="inserisciNave()">inserisci</button>
+<body onload="controlla()" class="bg-light">
+
+  <div class="container py-4" style="max-width: 600px;">
+    <h1 class="mb-4 text-center">Zona Magazziniere</h1>
+
+    <div class="card mb-4 shadow-sm p-3">
+      <h2 class="h5 mb-3">Inserisci nave</h2>
+      <input type="text" id="nomeN" placeholder="Nome" class="form-control mb-2" />
+      <button class="btn btn-primary w-100" onclick="inserisciNave()">Inserisci</button>
     </div>
-    <div>
-        <h2>inserisci porto</h2>
-        <input type="text" id="nomeP" placeholder="nome" />
-        <input type="text" id="nazionalita" placeholder="nazionalità" />
-        <button onclick="inserisciPorto()">inserisci</button>
+
+    <div class="card mb-4 shadow-sm p-3">
+      <h2 class="h5 mb-3">Inserisci porto</h2>
+      <input type="text" id="nomeP" placeholder="Nome" class="form-control mb-2" />
+      <input type="text" id="nazionalita" placeholder="Nazionalità" class="form-control mb-2" />
+      <button class="btn btn-primary w-100" onclick="inserisciPorto()">Inserisci</button>
     </div>
-    <div>
-      <h2>registra viaggio</h2>
-      <label for="id_nave">nave</label>
-      <select name="id_nave" id="id_nave">
 
-      </select>
-      <input type="date" id="dataP" placeholder="data partenza"/>
-      <input type="date" id="dataA" placeholder="data partenza"/>
-      <label for="porto_partenza">porto di partenza</label>
-      <select name="porto_partenza" id="porto_partenza">
+    <div class="card mb-4 shadow-sm p-3">
+      <h2 class="h5 mb-3">Registra viaggio</h2>
 
-      </select>
-      <label for="porto_arrivo">porto di arrivo</label>
-      <select name="porto_arrivo" id="porto_arrivo">
+      <label for="id_nave" class="form-label">Nave</label>
+      <select id="id_nave" class="form-select mb-3"></select>
 
-      </select>
-      <label for="direttrice">direttrice</label>
-      <select name="direttrice" id="direttrice">
+      <label for="dataP" class="form-label">Data partenza</label>
+      <input type="date" id="dataP" class="form-control mb-3" />
+
+      <label for="dataA" class="form-label">Data arrivo</label>
+      <input type="date" id="dataA" class="form-control mb-3" />
+
+      <label for="porto_partenza" class="form-label">Porto di partenza</label>
+      <select id="porto_partenza" class="form-select mb-3"></select>
+
+      <label for="porto_arrivo" class="form-label">Porto di arrivo</label>
+      <select id="porto_arrivo" class="form-select mb-3"></select>
+
+      <label for="direttrice" class="form-label">Direttrice</label>
+      <select id="direttrice" class="form-select mb-3">
         <option value="nord">Nord</option>
         <option value="nord-est">Nord-Est</option>
         <option value="est">Est</option>
@@ -185,10 +174,17 @@
         <option value="ovest">Ovest</option>
         <option value="nord-ovest">Nord-Ovest</option>
       </select>
-      <button onclick="inserisciviaggio()">registra</button>
+
+      <button class="btn btn-primary w-100" onclick="inserisciviaggio()">Registra</button>
     </div>
-    <button onclick="paginaPolizze()">polizze</button>
-    <div id="messaggio" class="errore"></div>
-    <button onclick="esci()">esci</button>
+
+    <div class="d-flex justify-content-between">
+      <button class="btn btn-secondary" onclick="paginaPolizze()">Polizze</button>
+      <button class="btn btn-danger" onclick="esci()">Esci</button>
+    </div>
+
+    <div id="messaggio" class="text-danger mt-3 text-center"></div>
+  </div>
+
 </body>
 </html>

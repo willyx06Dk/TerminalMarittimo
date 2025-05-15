@@ -1,56 +1,40 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Pagina Erogazione</title>
-  <style>
-    body { font-family: Arial; padding: 40px; background-color: #f0f0f0; }
-    .login-box {
-      background-color: #fff;
-      max-width: 900px;
-      margin: auto;
-      border: 1px solid #ccc;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
-    }
-    button {
-      padding: 8px 12px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .errore {
-      color: red;
-      margin-top: 15px;
-    }
-  </style>
+  <link rel="stylesheet" href="css/bootstrap.css" />
   <script src="js/gestoreChiamate.js"></script>
   <script src="js/merce.js"></script>
-  <script src="js/clienti.js"></script>
+  <script src="js/cliente.js"></script>
   <script src="js/personale.js"></script>
+  <script src="js/richiesta.js"></script>
+  <script src="js/autista.js"></script>
+  <script src="js/camion.js"></script>
   <script>
     async function inizializzaErogazione() {
       let personaleJSON = sessionStorage.getItem("personale");
-      if (!personaleJSON || JSON.parse(personaleJSON).getRuolo() !== "Erogatore") {
+      if (!personaleJSON || JSON.parse(personaleJSON).ruolo !== "Erogatore") {
         window.location.href = "loginAddetto.html";
         return;
       }
 
       await caricaRichieste();
+
+      let autisti = await getAutisti();
+      if (Array.isArray(autisti)) {
+        popolaSelect(autisti, "id_autista");
+      }
+
+      let camion = await getCamion();
+      if (Array.isArray(camion)) {
+        popolaSelect(camion, "id_camion");
+      }
+
+      let clienti = await getClienti();
+      if (Array.isArray(clienti)) {
+        popolaSelect(clienti, "id_cliente");
+      }
     }
 
     async function caricaRichieste() {
@@ -59,59 +43,45 @@
       tabella.innerHTML = "";
 
       if (!Array.isArray(richieste) || richieste.length === 0) {
-        tabella.innerHTML = "<tr><td colspan='5'>Nessuna richiesta da mostrare</td></tr>";
+        tabella.innerHTML = `<tr><td colspan="4" class="text-center py-3">Nessuna richiesta da mostrare</td></tr>`;
         return;
       }
 
-      
-        let header = document.createElement("tr");
-        let th1 = document.createElement("th");
-        th1.textContent = "Cliente";
-        header.appendChild(th1);
+      let header = document.createElement("tr");
+      ["Cliente", "Merce", "Quantità", "Azione"].forEach(text => {
+        let th = document.createElement("th");
+        th.textContent = text;
+        header.appendChild(th);
+      });
+      tabella.appendChild(header);
 
-        let th2 = document.createElement("th");
-        th2.textContent = "Merce";
-        header.appendChild(th2);
+      for (let r of richieste) {
+        let tr = document.createElement("tr");
 
-        let th3 = document.createElement("th");
-        th3.textContent = "Quantità";
-        header.appendChild(th3);
+        let nomeCliente = await getNomeCliente(r.id_cliente);
+        let nomeMerce = await getNomeMerce(r.id_merce);
 
-        let th4 = document.createElement("th");
-        th4.textContent = "Data";
-        header.appendChild(th4);
+        tr.innerHTML =
+          `<td>${nomeCliente}</td><td>${nomeMerce}</td><td>${r.quantita}</td>`;
 
-        let th5 = document.createElement("th");
-        th5.textContent = "Azione";
-        header.appendChild(th5);
+        let tdAzione = document.createElement("td");
+        let bottone = document.createElement("button");
+        bottone.className = "btn btn-primary btn-sm";
+        bottone.textContent = "Eroga";
+        bottone.onclick = () => eroga(r.quantita, r.id_merce, r.id_cliente, r.ID);
+        tdAzione.appendChild(bottone);
+        tr.appendChild(tdAzione);
 
-        tabella.appendChild(header);
-
-        for (let r of richieste) {
-            let tr = document.createElement("tr");
-
-            let nomeCliente = await getNomeCliente(r.id_cliente);
-            let nomeMerce = await getNomeMerce(r.id_merce);
-
-            tr.innerHTML = "<td>" + nomeCliente + "</td><td>" + nomeMerce + "</td><td>" + r.quantita + "</td><td>" + r.data + "</td>";
-
-            let tdAzione = document.createElement("td");
-            let bottone = document.createElement("button");
-            bottone.textContent = "Eroga";
-            bottone.onclick = () => eroga(r.quantita ,r.id_merce, r,id_cliente);
-            tdAzione.appendChild(bottone);
-            tr.appendChild(tdAzione);
-
-            tabella.appendChild(tr);
-        }
+        tabella.appendChild(tr);
+      }
     }
 
-    async function eroga(quantita, merce, cliente) {
+    async function eroga(quantita, merce, cliente, id) {
       let esito = document.getElementById("esitoErogazione");
-      let data=new Date();
+      let data = new Date().toISOString().split("T")[0];
       let personaleJSON = sessionStorage.getItem("personale");
-      let id_personaleJSON = JSON.parse(personaleJSON).getID();
-      let risultato = await addBuono(quantita, data, id_personaleJSON, cliente, merces);
+      let id_personaleJSON = JSON.parse(personaleJSON).id;
+      let risultato = await addBuono(quantita, data, id_personaleJSON, cliente, merce, id);
 
       if (risultato === "ok") {
         esito.textContent = "";
@@ -124,19 +94,92 @@
 
     function esci() {
       sessionStorage.clear();
-      window.location.href = "loginErgatore.html";
+      window.location.href = "loginAddetto.html";
+    }
+
+
+    async function inserisciRegistro() {
+      let data = new Date().toISOString().split("T")[0];
+      let peso = parseFloat(document.getElementById("peso_ritirato").value);
+      let idAutista = parseInt(document.getElementById("id_autista").value);
+      let idCamion = document.getElementById("id_camion").value;
+      let idCliente = parseInt(document.getElementById("id_cliente").value);
+      let idBuono = parseInt(document.getElementById("id_buono").value);
+      let messaggio = document.getElementById("messaggioRegistro");
+
+      let risultato = await addRegistro(data, peso, idAutista, idCamion, idCliente, idBuono);
+
+      if (risultato !== "ok") {
+        messaggio.textContent = "Errore durante la registrazione del ritiro.";
+        return;
+      }
+
+      alert("Operazione di registrazione inserita con successo");
+      setTimeout(() => { window.location.href = "erogatore.html"; }, 1000);
+    }
+
+    function popolaSelect(vett, id_select) {
+      let select = document.getElementById(id_select);
+      select.innerHTML = "";
+      vett.forEach(item => {
+        let option = document.createElement("option");
+        option.value = item.getID();
+        option.textContent = item.toString();
+        select.appendChild(option);
+      });
     }
   </script>
 </head>
-<body onload="inizializzaErogazione()">
-  <div class="login-box">
-    <h2>Benvenuto Erogatore</h2>
-    <h3>Richieste da Erogare</h3>
+<body class="bg-light" onload="inizializzaErogazione()">
 
-    <table id="tabellaRichieste"></table>
-    <div id="esitoErogazione" class="errore"></div>
+  <div class="container py-5">
+    <div class="card mx-auto shadow" style="max-width: 900px;">
+      <div class="card-body">
+        <h2 class="card-title text-center mb-4">Benvenuto Erogatore</h2>
 
-    <button onclick="esci()">Esci</button>
+        <h4>Richieste da Erogare</h4>
+        <div class="table-responsive">
+          <table id="tabellaRichieste" class="table table-bordered table-hover mb-3"></table>
+        </div>
+        <div id="esitoErogazione" class="text-danger mb-3"></div>
+
+        <h4>Registra Ritiro</h4>
+        <form onsubmit="event.preventDefault(); inserisciRegistro();">
+          <div class="mb-3">
+            <label for="peso_ritirato" class="form-label">Peso Ritirato (kg)</label>
+            <input type="number" step="0.01" class="form-control" id="peso_ritirato" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="id_autista" class="form-label">Autista</label>
+            <select id="id_autista" class="form-select" required></select>
+          </div>
+
+          <div class="mb-3">
+            <label for="id_camion" class="form-label">Camion</label>
+            <select id="id_camion" class="form-select" required></select>
+          </div>
+
+          <div class="mb-3">
+            <label for="id_cliente" class="form-label">Cliente</label>
+            <select id="id_cliente" class="form-select" required></select>
+          </div>
+
+          <div class="mb-3">
+            <label for="id_buono" class="form-label">ID Buono</label>
+            <input type="number" class="form-control" id="id_buono" required />
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Registra Ritiro</button>
+          <div id="messaggioRegistro" class="text-danger mt-2"></div>
+        </form>
+
+        <div class="d-grid mt-4">
+          <button class="btn btn-outline-secondary" onclick="esci()">Esci</button>
+        </div>
+      </div>
+    </div>
   </div>
+
 </body>
 </html>

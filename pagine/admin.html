@@ -2,93 +2,79 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>pagina admin</title>
-  <style>
-    body { font-family: Arial; padding: 40px; background-color: #f0f0f0; }
-    .login-box {
-      background-color: #fff;
-      max-width: 400px;
-      margin: auto;
-      border: 1px solid #ccc;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .errore {
-      color: red;
-      margin-top: 10px;
-    }
-  </style>
+  <title>Pagina Admin</title>
+  <link rel="stylesheet" href="css/bootstrap.css">
   <script src="js/gestoreChiamate.js"></script>
   <script src="js/personale.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script>
+  <script>
     async function inserisci() {
-        let messaggio = document.getElementById("messaggio");
-        let user=document.getElementById("username").value;
-        let password=document.getElementById("password").value;
-        let ruolo=document.getElementById("ruolo").value;
+      let messaggio = document.getElementById("messaggio");
+      let user = document.getElementById("username").value;
+      let password = document.getElementById("password").value;
+      let ruolo = document.getElementById("ruolo").value;
 
-        let val=JSON.parse(sessionStorage["personale"]);
-        let credenziali=new PersonaleTerminal(val.id, val.username, val.password,val.ruolo);
+      let val = JSON.parse(sessionStorage["personale"]);
+      let credenziali = new PersonaleTerminal(val.id, val.username, val.password, val.ruolo);
 
-        let risultato = await addAddetto(user, password, ruolo, credenziali.getUsername(), credenziali.getPassword(), credenziali.getRuolo());
+      let risultato = await addAddetto(user, password, ruolo, credenziali.getUsername(), credenziali.getPassword(), credenziali.getRuolo());
 
-        if (risultato !== "ok") {
-            messaggio.textContent = "utente già esistente o errore nell'inserimento delle credenziali.";
-            return;
-        }
-
-        alert("utente inserito con successo");
-        setTimeout(() => {window.location.href = "admin.html";}, 1000);
-        }
-
-      function controlla(){
-        let personaleJSON = sessionStorage.getItem("personale");
-        if (!personaleJSON) {
-          window.location.href = "loginAddetto.html";
-          return;
-        }
-        let pers=JSON.parse(personaleJSON);
-        let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
-        if(p.getRuolo()!="Admin"){
-          window.location.href = "loginAddetto.html";
-          return;
-        }
+      if (risultato !== "ok") {
+        messaggio.textContent = "Utente già esistente o errore nell'inserimento delle credenziali.";
+        return;
       }
 
-      function esci(){
-        sessionStorage.clear();
+      alert("Utente inserito con successo");
+      setTimeout(() => { window.location.href = "admin.html"; }, 1000);
+    }
+
+    function controlla() {
+      let personaleJSON = sessionStorage.getItem("personale");
+      if (!personaleJSON) {
         window.location.href = "loginAddetto.html";
         return;
       }
-    </script>  
+      let pers = JSON.parse(personaleJSON);
+      let p = new PersonaleTerminal(pers.id, pers.username, pers.password, pers.ruolo);
+      if (p.getRuolo() !== "Admin") {
+        window.location.href = "loginAddetto.html";
+        return;
+      }
+    }
+
+    function esci() {
+      sessionStorage.clear();
+      window.location.href = "loginAddetto.html";
+    }
+  </script>
 </head>
-<body onload="controlla()">
-    <h2>inserisci addetto</h2>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <select name="ruolo" id="ruolo">
-        <option value="Erogatore">erogatore</option>
-        <option value="Magazziniere">magazziniere</option>
-    </select>
-    <button onclick="inserisci()">inserisci</button>
-    <div id="messaggio" class="errore"></div>
-    <button onclick="esci()">esci</button>
+<body class="bg-light" onload="controlla()">
+
+  <div class="container d-flex align-items-center justify-content-center vh-100">
+    <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
+      <h2 class="text-center mb-4">Inserisci Addetto</h2>
+      
+      <div class="mb-3">
+        <input type="text" id="username" class="form-control" placeholder="Username">
+      </div>
+      <div class="mb-3">
+        <input type="password" id="password" class="form-control" placeholder="Password">
+      </div>
+      <div class="mb-3">
+        <select id="ruolo" class="form-select">
+          <option value="Erogatore">Erogatore</option>
+          <option value="Magazziniere">Magazziniere</option>
+        </select>
+      </div>
+      <div class="d-grid mb-3">
+        <button class="btn btn-primary" onclick="inserisci()">Inserisci</button>
+      </div>
+      <div id="messaggio" class="text-danger text-center small mb-3"></div>
+      <div class="d-grid">
+        <button class="btn btn-outline-secondary" onclick="esci()">Esci</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

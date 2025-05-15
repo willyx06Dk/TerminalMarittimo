@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Area Fornitore</title>
+  <link rel="stylesheet" href="css/bootstrap.css" />
+
+  <script src="js/gestoreChiamate.js"></script>
+  <script src="js/fornitore.js"></script>
+  <script src="js/polizza.js"></script>
+  <script src="js/buoni.js"></script>
+
+  <script>
+    async function inizializzaFornitore() {
+      let fornJSON = sessionStorage.getItem("fornitore");
+      if (!fornJSON) {
+        window.location.href = "loginFornitore.html";
+        return;
+      }
+      let fornitore = JSON.parse(fornJSON);
+      await caricaPolizze(fornitore.id);
+    }
+
+    async function caricaPolizze(idFornitore) {
+      let polizze = await getPolizza(idFornitore);
+      let tabella = document.getElementById("tabPolizze");
+      tabella.innerHTML = "";
+
+      if (!Array.isArray(polizze)) {
+        tabella.innerHTML = `<tr><td colspan="4" class="text-center py-3">Nessuna polizza disponibile</td></tr>`;
+        return;
+      }
+
+      for (let p of polizze) {
+        let row = tabella.insertRow();
+        row.insertCell().textContent = p.getID();
+        row.insertCell().textContent = p.getQuantita();
+        row.insertCell().textContent = p.getMerce();
+        row.insertCell().textContent = p.getViaggio();
+      }
+
+      if (!tabella.rows.length) {
+        tabella.innerHTML = `<tr><td colspan="4" class="text-center py-3">Nessuna polizza intestata a questo fornitore</td></tr>`;
+      }
+    }
+
+    function esci() {
+      sessionStorage.clear();
+      window.location.href = "loginFornitore.html";
+    }
+  </script>
+</head>
+
+<body class="bg-light" onload="inizializzaFornitore()">
+  <div class="container py-5">
+    <div class="card mx-auto shadow" style="max-width: 900px;">
+      <div class="card-body">
+        <h2 class="card-title text-center mb-4">Benvenuto fornitore</h2>
+
+        <h4 class="text-center mb-3">Le tue polizze</h4>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover text-center">
+            <thead class="table-primary">
+              <tr>
+                <th>ID</th>
+                <th>Quantità</th>
+                <th>Merce</th>
+                <th>Viaggio</th>
+              </tr>
+            </thead>
+            <tbody id="tabPolizze"></tbody>
+          </table>
+        </div>
+
+        <button class="btn btn-primary w-100 mt-3" onclick="esci()">Esci</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

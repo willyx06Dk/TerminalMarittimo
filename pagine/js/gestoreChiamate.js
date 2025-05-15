@@ -65,10 +65,10 @@ async function registraCliente(nome, cognome, email, codice, user, pass) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo == "ok"){
-            return  "ok";
+        if (testo === "ok") {
+            return "ok";
         }
-        return  "errore";
+        return "errore";
     } catch (error) {
         console.log("Errore nella fetch:", error);
         return "errore";
@@ -82,10 +82,10 @@ async function registraFornitore(nome, email, user, pass) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo == "ok"){
-            return  "ok";
+        if (testo === "ok") {
+            return "ok";
         }
-        return  "errore";
+        return "errore";
     } catch (error) {
         console.log("Errore nella fetch:", error);
         return "errore";
@@ -99,10 +99,10 @@ async function addAddetto(user, pass, ruolo, usernameA, passwordA, ruoloA) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo == "ok"){
-            return  "ok";
+        if (testo === "ok") {
+            return "ok";
         }
-        return  "errore";
+        return "errore";
     } catch (error) {
         console.log("Errore nella fetch:", error);
         return "errore";
@@ -114,10 +114,10 @@ async function addMerce(nome, categoria) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo == "ok"){
-            return  "ok";
+        if (testo === "ok") {
+            return "ok";
         }
-        return  "errore";
+        return "errore";
     } catch (error) {
         console.log("Errore nella fetch:", error);
         return "errore";
@@ -129,10 +129,10 @@ async function addNave(nome) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo == "ok"){
-            return  "ok";
+        if (testo === "ok") {
+            return "ok";
         }
-        return  "errore";
+        return "errore";
     } catch (error) {
         console.log("Errore nella fetch:", error);
         return "errore";
@@ -144,10 +144,10 @@ async function addPorto(nome, nazionalita) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo == "ok"){
-            return  "ok";
+        if (testo === "ok") {
+            return "ok";
         }
-        return  "errore";
+        return "errore";
     } catch (error) {
         console.log("Errore nella fetch:", error);
         return "errore";
@@ -163,10 +163,10 @@ async function getPorti() {
             console.log("Errore");
             return null;
         }
-        let vett=[];
+        let vett = [];
         for (let index = 0; index < data.length; index++) {
             let element = data[index];
-            let porto=new Porto(element.id, element.nome, element.nazionalita);
+            let porto = new Porto(element.id, element.nome, element.nazionalita);
             vett.push(porto);
         }
         return vett;
@@ -185,11 +185,11 @@ async function getMerci() {
             console.log("Errore");
             return null;
         }
-        let vett=[];
+        let vett = [];
         for (let index = 0; index < data.length; index++) {
             let element = data[index];
-            let porto=new Merce(element.id, element.nome, element.categoria);
-            vett.push(porto);
+            let merce = new Merce(element.id, element.nome, element.categoria);
+            vett.push(merce);
         }
         return vett;
     } catch (error) {
@@ -207,11 +207,11 @@ async function getNavi() {
             console.log("Errore");
             return null;
         }
-        let vett=[];
+        let vett = [];
         for (let index = 0; index < data.length; index++) {
             let element = data[index];
-            let porto=new Nave(element.id, element.nome);
-            vett.push(porto);
+            let nave = new Nave(element.id, element.nome);
+            vett.push(nave);
         }
         return vett;
     } catch (error) {
@@ -225,32 +225,35 @@ async function addViaggio(dp, da, pp, pa, d, add, nav) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo == "ok"){
-            let id_viaggio=getIdViaggio(dp, da, pp, pa, d, add);
-            if (id_viaggio==-1) {
+        if (testo == "ok") {
+            let id_viaggio = await getIdViaggio(dp, da, pp, pa, d, add);
+            if (id_viaggio == -1) 
+                return "errore";
+
+            let prosegui = await addViaggioRegistrato(nav, id_viaggio);
+            if(prosegui !="ok"){
                 return "errore";
             }
-            if(addViaggioRegistrato(nav, id_viaggio)=="ok"){
-                return "ok";
-            }
-            return "errore";
+            return "ok";
         }
-        return  "errore";
+        return "errore";
     } catch (error) {
         console.log("Errore nella fetch:", error);
         return "errore";
     }
 }
 
+
 async function addViaggioRegistrato(id_nave, id_viaggio) {
-    let url = "http://localhost:8080/viaggiRegistrati/aggiung?id_nave?="+id_nave+"&id_viaggio="+id_viaggio;
+    let url = "http://localhost:8080/viaggiRegistrati/aggiungi?id_nave="+id_nave+"&id_viaggio="+id_viaggio;
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo == "ok"){
-            return  "ok";
+        console.log(testo);
+        if(testo !="ok"){
+            return "errore";
         }
-        return  "errore";
+        return "ok";
     } catch (error) {
         console.log("Errore nella fetch:", error);
         return "errore";
@@ -262,8 +265,8 @@ async function getIdViaggio(dp, da, pp, pa, d, add) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo != -1){
-            return  testo;
+        if (testo !== "-1") {
+            return testo;
         }
         return -1;
     } catch (error) {
@@ -277,13 +280,14 @@ async function addPolizza(q, v, m, f, add, d) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo == "ok"){
-            if(addMagazzino(q, m ,add, d)=="ok"){
+        if (testo === "ok") {
+            let result = await addMagazzino(q, m, add, d);
+            if (result === "ok") {
                 return "ok";
             }
             return "errore";
         }
-        return  "errore";
+        return "errore";
     } catch (error) {
         console.log("Errore nella fetch:", error);
         return "errore";
@@ -291,19 +295,17 @@ async function addPolizza(q, v, m, f, add, d) {
 }
 
 async function addMagazzino(q, m, add, d) {
-    let url = "http://localhost:8080/magazzino/inserisci/q?="+q+"&m="+m+"&a="+add+"&d="+d;
+    let url = "http://localhost:8080/magazzino/inserisci?q="+q+"&m="+m+"&a="+add+"&d="+d;
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo == "ok"){
-            return  "ok";
-        }
-        return  "errore";
+        return testo === "ok" ? "ok" : "errore";
     } catch (error) {
         console.log("Errore nella fetch:", error);
         return "errore";
     }
 }
+
 
 
 async function getFornitori() {
@@ -315,10 +317,10 @@ async function getFornitori() {
             console.log("Errore");
             return null;
         }
-        let vett=[];
+        let vett = [];
         for (let index = 0; index < data.length; index++) {
             let element = data[index];
-            let fornitore=new Fornitore(element.id, element.username, element.password, element.nome);
+            let fornitore = new Fornitore(element.id, element.username, element.password, element.nome);
             vett.push(fornitore);
         }
         return vett;
@@ -329,17 +331,19 @@ async function getFornitori() {
 }
 
 async function getViaggiDati() {
-    let url = "http://localhost:8080/viaggiReggistrati/ottieni";
+    let url = "http://localhost:8080/viaggiRegistrati/ottieni";
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo != ""){
-            let vett=[];
-            for (let index = 0; index < data.length; index++) {
-                let element = data[index];
-                vett.push(element);
+        if (testo !== "") {
+            let data = JSON.parse(testo);
+            let vett = [];
+            for (let i = 0; i < data.length; i++) {
+                let el = data[i];
+                let v=new ViaggiRegistrati(el.dataPartenza, el.dataArrivo, el.portoPartenza, el.portoArrivo, el.direttrice, el.addetto, el.nome);
+                vett.push(v.toString());
             }
-            return  vett;
+            return vett;
         }
         return "errore";
     } catch (error) {
@@ -347,6 +351,9 @@ async function getViaggiDati() {
         return "errore";
     }
 }
+
+
+
 
 async function addRichiesta(id_c, id_m, q) {
     let url = "http://localhost:8080/richiesta/inserisci?id_c="+id_c+"&id_m="+id_m+"&q="+q;
@@ -363,14 +370,21 @@ async function addRichiesta(id_c, id_m, q) {
     }
 }
 
-async function addBuono(quantita, data, id_emittente, id_cliente, id_merce) {
+async function addBuono(quantita, data, id_emittente, id_cliente, id_merce, id_richiesta) {
     let url = "http://localhost:8080/buono/inserisci?quantita="+quantita+"&data="+data+"&id_emittente="+id_emittente+"&id_cliente="+id_cliente+"&id_merce="+id_merce;
-
     try {
         let response = await fetch(url);
         let testo = await response.text();
         if (testo === "ok") {
-            return "ok";
+            let str=await cancellaRichiesta(id_richiesta);
+            if (str === "ok") {
+                let prosegui= await svuotaMagazzino(id_merce, quantita);
+                if(prosegui=== "ok"){
+                    return "ok";
+                }
+                return "errore";
+            }
+            return "errore";
         }
         return "errore";
     } catch (error) {
@@ -380,19 +394,19 @@ async function addBuono(quantita, data, id_emittente, id_cliente, id_merce) {
 }
 
 async function getBuoniCliente(id) {
-    let url = "http://localhost:8080/buono/ottieni?id=" + id;
+    let url = "http://localhost:8080/buono/ottieni?id="+id;
     try {
         let response = await fetch(url);
         let testo = await response.text();
         if (testo !== "") {
             let data = JSON.parse(testo);
             let vett = [];
+            console.log(data)
 
-            for (let index = 0; index < data.length; index++) {
-                let element = data[index];
+            for (let element of data) {
                 let nomeMerce = await getNomeMerce(element.id_merce);
                 let nomeEmittente = await getNomeEmittente(element.id_emittente);
-                let buono = new Buono(element.ID,element.quantita_merce,element.data_rilascio, nomeMerce, nomeEmittente, element.id_cliente);
+                let buono = new Buono(element.id, element.quantita_merce, element.data_rilascio, nomeEmittente, element.id_cliente, nomeMerce);
                 vett.push(buono);
             }
 
@@ -405,13 +419,14 @@ async function getBuoniCliente(id) {
     }
 }
 
+
 async function getNomeMerce(id) {
     let url = "http://localhost:8080/merce/ottieniNome?id="+id;
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo != ""){
-            return  testo;
+        if (testo !== "") {
+            return testo;
         }
         return "";
     } catch (error) {
@@ -425,8 +440,8 @@ async function getNomeEmittente(id) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo != ""){
-            return  testo;
+        if (testo !== "") {
+            return testo;
         }
         return "";
     } catch (error) {
@@ -440,8 +455,8 @@ async function getNomeCliente(id) {
     try {
         let response = await fetch(url);
         let testo = await response.text();
-        if(testo != ""){
-            return  testo;
+        if (testo !== "") {
+            return testo;
         }
         return "";
     } catch (error) {
@@ -451,7 +466,7 @@ async function getNomeCliente(id) {
 }
 
 async function getRichieste() {
-    let url = "http://localhost:8080/richieste/ottieni";
+    let url = "http://localhost:8080/richiesta/ottieni";
     try {
         let response = await fetch(url);
         let testo = await response.text();
@@ -460,10 +475,188 @@ async function getRichieste() {
             let vett = [];
             for (let index = 0; index < data.length; index++) {
                 let element = data[index];
-                let richiesta = new Richiesta(element.ID, element.id_cliente, element.id_merce, element.quantita);
+                let richiesta = new Richiesta(element.id, element.id_cliente, element.id_merce, element.quantita);
                 vett.push(richiesta);
             }
             return vett;
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";     
+    }
+}
+
+async function getViaggi() {
+    let url = "http://localhost:8080/viaggio/ottieniViaggi";
+    try {
+        let response = await fetch(url);
+        let data = await response.json();
+        if (!Array.isArray(data)) {
+            console.log("Errore: la risposta non è un array");
+            return null;
+        }
+        let vett = [];
+        for (let index = 0; index < data.length; index++) {
+            let element = data[index];
+            let viaggio = new Viaggio(element.id,element.dataPartenza,element.dataArrivo,element.portoPartenza,element.portoArrivo,element.direttrice,element.addetto);
+            vett.push(viaggio);
+        }
+        return vett;
+    } catch (error) {
+        console.error("Errore durante il recupero dei viaggi:", error);
+        return null;
+    }
+}
+
+async function getPolizza(idFornitore) {
+    let url = "http://localhost:8080/polizza/ottieni?f=" + idFornitore;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo !== "") {
+            let data = JSON.parse(testo);
+            let vett = [];
+            console.log(data);
+
+            for (let element of data) {
+                let nomeMerce = await getNomeMerce(element.merce);
+                let polizza = new Polizza(element.id, element.quantita, element.viaggio, nomeMerce, element.fornitore);
+                vett.push(polizza);
+            }
+            return vett;
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function cancellaRichiesta(id) {
+        console.log(id);
+    let url = "http://localhost:8080/richiesta/rimuovi?id="+id;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo === "ok") {
+            return "ok";
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function svuotaMagazzino(id_merce, q) {
+    let url = "http://localhost:8080/magazzino/svuota?m="+id_merce+"&rimossa="+q;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo === "ok") {
+            return "ok";
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+async function getAutisti() {
+    let url = "http://localhost:8080/autista/ottieni";
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo !== "") {
+            let data = JSON.parse(testo);
+            let vett = [];
+
+            for (let element of data) {
+                let autista = new Autista(element.id, element.nome, element.cognome, element.email);
+                vett.push(autista);
+            }
+            return vett;
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch autisti:", error);
+        return "errore";
+    }
+}
+
+async function getCamion() {
+    let url = "http://localhost:8080/camion/ottieni";
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo !== "") {
+            let data = JSON.parse(testo);
+            let vett = [];
+            console.log(data);
+
+            for (let element of data) {
+                let camion = new Camion(element.targa, element.modello);
+                vett.push(camion);
+            }
+            return vett;
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch camion:", error);
+        return "errore";
+    }
+}
+
+async function getClienti() {
+    let url = "http://localhost:8080/cliente/ottieni";
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo !== "") {
+            let data = JSON.parse(testo);
+            let vett = [];
+            for (let element of data) {
+                let cliente = new Cliente(element.id, element.username, element.password);
+                vett.push(cliente);
+            }
+            return vett;
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch clienti:", error);
+        return "errore";
+    }
+}
+
+async function addRegistro(data, peso, idAutista, idCamion, idCliente, id_buono) {
+    let url = "http://localhost:8080/registro/inserisci?data_ritiro="+data+"&peso_ritirato="+peso+"&id_autista="+idAutista+"&id_camion="+idCamion+"&id_cliente="+idCliente;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo === "ok") {
+            let str=await cancellaBuono(id_buono);
+            if (str === "ok") {
+                return "ok";
+            }
+            return "errore";
+        }
+        return "errore";
+    } catch (error) {
+        console.log("Errore nella fetch:", error);
+        return "errore";
+    }
+}
+
+
+async function cancellaBuono(id) {
+    let url = "http://localhost:8080/buono/rimuovi?id="+id;
+    try {
+        let response = await fetch(url);
+        let testo = await response.text();
+        if (testo === "ok") {
+            return "ok";
         }
         return "errore";
     } catch (error) {

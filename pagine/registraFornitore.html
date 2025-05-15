@@ -1,70 +1,49 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Registra fornitore</title>
-  <style>
-    body { font-family: Arial; padding: 40px; background-color: #f0f0f0; }
-    .login-box {
-      background-color: #fff;
-      max-width: 400px;
-      margin: auto;
-      border: 1px solid #ccc;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .errore {
-      color: red;
-      margin-top: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="css/bootstrap.css" />
+
   <script src="js/gestoreChiamate.js"></script>
   <script src="js/personale.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script>
+
+  <script>
     async function registra() {
-        let messaggio = document.getElementById("messaggio");
-        let nome=document.getElementById("nome").value;
-        let email=document.getElementById("email").value;
-        let user=document.getElementById("username").value;
-        let password=document.getElementById("password").value;
+      let messaggio = document.getElementById("messaggio");
+      messaggio.textContent = "";
 
-        codice=codice.substring(0,19);
+      let nome = document.getElementById("nome").value.trim();
+      let email = document.getElementById("email").value.trim();
+      let user = document.getElementById("username").value.trim();
+      let password = document.getElementById("password").value;
 
-        let risultato = await registraFornitore(nome, user, password, email);
+      let risultato = await registraFornitore(nome, email, user, password);
 
-        if (risultato !== "ok") {
+      if (risultato !== "ok") {
         messaggio.textContent = "Credenziali errate o errore nel login.";
         return;
-        }
-        
-        window.location.href = "loginFornitore.html";
-        }
-    </script>  
+      }
+
+      window.location.href = "loginFornitore.html";
+    }
+  </script>
 </head>
-<body>
-    <h2>Registra Fornitore</h2>
-    <input type="text" id="nome" placeholder="Nome" />
-    <input type="text" id="email" placeholder="Email" />
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="registra()">Registra</button>
-    <div id="messaggio" class="errore"></div>
+<body class="bg-light">
+
+  <div class="container" style="max-width: 400px; padding: 40px;">
+    <h2 class="mb-4 text-center">Registra Fornitore</h2>
+
+    <input type="text" id="nome" class="form-control mb-3" placeholder="Nome" />
+    <input type="text" id="email" class="form-control mb-3" placeholder="Email" />
+    <input type="text" id="username" class="form-control mb-3" placeholder="Username" />
+    <input type="password" id="password" class="form-control mb-4" placeholder="Password" />
+
+    <button class="btn btn-primary w-100" onclick="registra()">Registra</button>
+
+    <div id="messaggio" class="text-danger mt-3 text-center"></div>
+  </div>
+
 </body>
 </html>
